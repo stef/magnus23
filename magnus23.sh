@@ -4,6 +4,22 @@ source ./configuration.sh
 
 mkdir -p "$EVENTS"
 
+function post_event
+{
+  local text
+  text="$(grep -q 8859 <<<"$(file - <<<"$1")" && \
+          iconv -f latin1 -t utf-8 <<<"$1" || \
+          echo "$1")"
+          
+  echo "Posting event: $text (sent by $2)"
+
+  ./grindr/feedr <"$CALENDAR_LOGIN"
+  (./hspbp-tiki-add-event "$text" "$2" | ./grindr/feedr) &&
+     print "ACK" || \
+     { print "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"
+        echo  "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"; }
+}
+
 function post_tweet
 {
   local text
@@ -82,7 +98,7 @@ function translate_time
 
 function print_help
 {
-  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent'
+  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent'
 }
 
 function addquote
@@ -101,7 +117,7 @@ function addevent
     time="$(translate_time "$time")"
     id=$(next_event_id) && \
       { echo "$time" > "$EVENTS/$id"
-        echo "$(perl -pe 's/^((\d{4}-\d{2}-\d{2} )?\d{2}:\d{2}(:\d{2})?|(\d+([dhm]?))+) ?//' \
+         echo "$(perl -pe 's/^((\d{4}-\d{2}-\d{2} )?(\d{2}:\d{2}(:\d{2})?)?|(\d+([dhm]?))+) ?//' \
           <<<"$1")" >> "$EVENTS/$id"
         print "Event $id successfully added. ($(timesplit $(( $time - $(date +%s) ))))"
       } || print "No more events can be added. Remove one using !delevent or let one expire."
@@ -140,6 +156,8 @@ function handle_commands
   do
     message_text="$(msg_text)"
     case "$message_text" in
+      *${IRC_NICK}*)
+        print "ACTION alszik" ;;
       !help)
         print_help ;;
       !addquote\ *)
@@ -154,10 +172,14 @@ function handle_commands
         delevent "$(cut -d' ' -f2 <<<"$message_text")" ;;
       !listevents)
         listevents ;;
+      !postevent\ *)
+        post_event "${message_text#\!postevent }" "$(msg_nick)" ;;
       !tweet\ *)
         post_tweet "${message_text#\!tweet }" "$(msg_nick)" ;;
       !twitter\ *)
         post_tweet "${message_text#\!twitter }" "$(msg_nick)" ;;
+      #!tell\ *)
+      #  addevent "${message_text#\!tell }" ;;
     esac
   done
 }
