@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import sys, re
+
+try:
+    msg=sys.argv[1]
+except:
+    msg="2010-11-01 18:00+2 Test event|some description and an url: http://bit.ly/asdfa2"
+try:
+    user=sys.argv[2]
+except:
+    user="magnus23"
+
+parser=re.compile('^(?P<YEAR>\d{4})-(?P<MONTH>\d{2})-(?P<DAY>\d{2}) (?P<HOUR>\d{2}):(?P<MINUTE>\d{2})\+(?P<DURATION>\d+) (?P<TITLE>[^|]*)($|(?P<BODY>.*)$)')
+tokens=re.match(parser,msg)
+if len(tokens.group())>=8:
+    params=tokens.groupdict('')
+    params['USER']=user
+    print """{{ "action": 'http://www.hspbp.org/tiki-calendar_edit_item.php',
+            "resultxpath": 'string(//h:div[@style="color: #900"]/text())',
+            "postfields": {{
+                    "save[user]": "{USER}",
+                    "save[calendarId]": "1",
+                    "save[name]": "{TITLE}",
+                    "start_date_Year": "{YEAR}",
+                    "start_date_Month": "{MONTH}",
+                    "start_date_Day": "{DAY}",
+                    "start_Hour": "{HOUR}",
+                    "start_Minute": "{MINUTE}",
+                    "save[end_or_duration]": "duration",
+                    "duration_Hour": "{DURATION}",
+                    "duration_Minute": "0",
+                    "save[description]": "{BODY}",
+                    "save[status]": "1",
+                    "save[locationId]": "7",
+                    "recurrent": "0",
+                    "act": "Save"}}
+            }}""".format(**params)
+    sys.exit(0)
+else:
+    sys.exit(1)
