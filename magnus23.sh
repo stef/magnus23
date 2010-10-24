@@ -6,7 +6,6 @@ mkdir -p "$EVENTS"
 
 function post_tweet
 {
-  set -x
   local text
   text="$(grep -q 8859 <<<"$(file - <<<"$1")" && \
           iconv -f latin1 -t utf-8 <<<"$1" || \
@@ -18,7 +17,6 @@ function post_tweet
       print "Tweet SUCCESS!" || \
       { print "Tweet failed... :("
         echo "Tweet failed... :("; }
-  set +x
 }
 
 function get_tweets
@@ -97,7 +95,7 @@ function addquote
 function addevent
 {
   time="$(perl -lne \
-    'print $1 if /^((\d{4}-\d{2}-\d{2} )?\d{2}:\d{2}(:\d{2})?|(\d+([dhm]?))+)/' <<<"$1")"
+     'print $1 if /^((\d{4}-\d{2}-\d{2} )?(\d{2}:\d{2}(:\d{2})?)?|(\d+([dhm]?))+)/' <<<"$1")"
   if [ -n "$time" ]
   then
     time="$(translate_time "$time")"
