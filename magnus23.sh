@@ -6,8 +6,8 @@ mkdir -p "$EVENTS"
 
 function dream
 {
-   d="ACTION $(shuf $BASE_DIR/dreams.txt | head -1)"
-   echo "$d"
+   sleep $(( RANDOM % 120 ))
+   d="ACTION $(shuf -n1 $BASE_DIR/dreams.txt)"
    print "$d"
 }
 
@@ -47,9 +47,7 @@ function post_event
 
   ./grindr/feedr <"$CALENDAR_LOGIN"
   (./hspbp-tiki-add-event "$text" "$2" | ./grindr/feedr) &&
-     print "ACK" || \
-     { print "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"
-        echo  "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"; }
+     print "ACK" || print "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"
 }
 
 function post_tweet
@@ -63,9 +61,7 @@ function post_tweet
   echo "Tweeting: $text (sent by $2)"
   
   ttytter -silent -status="$text" && \
-      print "Tweet SUCCESS!" || \
-      { print "Tweet failed... :("
-        echo "Tweet failed... :("; }
+      print "Tweet SUCCESS!" || print "Tweet failed... :("
 }
 
 function get_tweets
@@ -199,7 +195,7 @@ function handle_commands
        !lastquote)
           print "Last quote: $(tail -n1 "$QUOTES")" ;;
        !quote|!randomquote)
-          print "$(sed -n $[ 1 + $RANDOM % $(grep -c '' "$QUOTES") ]p "$QUOTES")" ;;
+          print "$(shuf -n1 "$QUOTES")" ;;
        !addevent\ *)
           addevent "${message_text#\!addevent }" ;;
        !delevent\ *)
@@ -218,7 +214,7 @@ function handle_commands
 
     case "$message_text" in
       *${IRC_NICK}*)
-         dream ;;
+         dream& ;;
     esac
   done
 }
