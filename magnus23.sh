@@ -29,7 +29,7 @@ function dotell
 function auth
 {
    grep -qs "^$1$" $BASE_DIR/auth || { 
-      print "NOOOOOOOOO!!11eleven!!!"
+      print "NOOOOOOOOO!!1!!tizenegy!!!"
       return 1
    }
 }

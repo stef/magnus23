@@ -1,0 +1,12 @@
+This is a fork of an IRC-bot used by werebuild: http://werebuild.eu/wiki/John-Henry
+
+The code needed some updates. 
+
+[CHANGELOG]
+
+- updated to ttytter for oauth support
+- added !tell for message relaying
+- added custom posting of events to the hspbp.org tiki calendar
+- added whitelisting support
+- some small fixes
+- added dreams
