@@ -13,8 +13,6 @@ function tell
 {
    user="${1%%[ :]*}"
    msg="${1#*[ :]}"
-   echo $user
-   echo $msg
    echo "$user: $2 says \"$msg\"" >>"$BASE_DIR/tell/$user" &&
       print "ACK" || print "NACK"
 }
