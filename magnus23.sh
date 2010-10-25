@@ -6,13 +6,16 @@ mkdir -p "$EVENTS"
 
 function dream
 {
-   print "ACTION $(shuf $BASE_DIR/dreams.txt | head -1)"
+   d="ACTION $(shuf $BASE_DIR/dreams.txt | head -1)"
+   echo "$d"
+   print "$d"
 }
 
 function tell
 {
    user="${1%%[ :]*}"
    msg="${1#*[ :]}"
+   echo "$user: $2 says \"$msg\""
    echo "$user: $2 says \"$msg\"" >>"$BASE_DIR/tell/$user" &&
       print "ACK" || print "NACK"
 }
@@ -31,6 +34,7 @@ function auth
       return 1
    }
 }
+
 function post_event
 {
   auth "$2" || return
