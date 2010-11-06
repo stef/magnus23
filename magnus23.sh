@@ -3,6 +3,7 @@
 source ./configuration.sh
 
 mkdir -p "$EVENTS"
+# sanitize msg  ${asdf//[^a-zA-Z0-9 ]/}
 
 function dream
 {
@@ -184,6 +185,7 @@ function handle_commands
   tail --pid=$$ -fn0 "$IRC_CONNECTIONS/$IRC_HOST/$IRC_CHAN/out" | while read MSG
   do
     message_text="$(msg_text)"
+    message_text="${message_text//[^a-zA-Z0-9 :!.,;/><_+)(*&^%#@?|]/}"
 
     [[ -f "$BASE_DIR/tell/$(msg_nick)" ]] && dotell "$(msg_nick)"
 

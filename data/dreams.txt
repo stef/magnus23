@@ -1,0 +1,10 @@
+ACTION alszik
+ACTION morgolodik
+ACTION mocorog
+ACTION almodik
+ACTION egyik csapja elindul feled
+halando! miert ebresztgetsz?
+azathoth falja fel zajongo lelked!
+biztos jo otlet engem ebresztgetni?
+CSOND LEGYEN!
+'j
