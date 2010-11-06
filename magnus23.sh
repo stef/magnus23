@@ -7,7 +7,7 @@ mkdir -p "$EVENTS"
 function dream
 {
    sleep $(( RANDOM % 120 ))
-   d="ACTION $(shuf -n1 $BASE_DIR/dreams.txt)"
+   d="$(shuf -n1 $BASE_DIR/dreams.txt)"
    print "$d"
 }
 
