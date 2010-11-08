@@ -273,7 +273,8 @@ function handle_tweets
     done
     cp tweets tweets.old
     sleep 60
-    get_tweets > tweets
+    get_tweets > tweets.new
+    [[ -s tweets.new ]] && mv tweets.new tweets
   done
 }
 
