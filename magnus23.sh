@@ -246,7 +246,7 @@ function handle_events
           then
             [ $interval -ge 60 ] && \
               print "Event $(basename $event): $(timesplit "$remaining")"\
-"until $(tail -n1 "$event")" || \
+" until $(tail -n1 "$event")" || \
               print "$(timesplit "$remaining")"
             break
           fi
