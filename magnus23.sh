@@ -182,7 +182,7 @@ function listevents
 
 function handle_commands
 {
-  tail --pid=$$ -fn0 "$IRC_CONNECTIONS/$IRC_HOST/$IRC_CHAN/out" | while read MSG
+  tail --pid=$$ -fn0 "$IRC_CONNECTIONS/$IRC_HOST/$IRC_CHAN/out" | tr -d '`$' |  while read MSG
   do
     message_text="$(msg_text)"
     message_text="${message_text//[^a-zA-Z0-9 :!.,;/><_+)(*&^%#@?|]/}"
