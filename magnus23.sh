@@ -215,8 +215,8 @@ function handle_commands
     esac 
 
     case "$message_text" in
-      *${IRC_NICK}*)
-         dream& ;;
+      arise\ ${IRC_NICK}*) print "I will devour your disgusting soul, mortal!"; break;; 
+      *${IRC_NICK}*) dream& ;;
     esac
   done
 }
