@@ -216,6 +216,7 @@ function handle_commands
 
     case "$message_text" in
       arise\ ${IRC_NICK}*) print "I will devour your disgusting soul, mortal!"; break;; 
+      *hail\ ${IRC_NICK}*) print "Yes! Hail me! while you still can, when my tentacles will tear your soul apart!"; break;; 
       *${IRC_NICK}*) dream& ;;
     esac
   done
