@@ -215,8 +215,8 @@ function handle_commands
 
     case "$message_text" in
       arise\ ${IRC_NICK}*) print "I will devour your disgusting soul, mortal!";;
-      *hail\ ${IRC_NICK}*) print "Yes! Hail me! while you still can, when my tentacles will tear your soul apart!";;
-      *fuck\ you\ ${IRC_NICK}*) print "/ban $msg_nick"; print "DON'T fuck with the mighty one!!!1!!!" ;;
+      *hail\ ${IRC_NICK}*) print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
+      *fuck\ you\ ${IRC_NICK}*) print "/kick $msg_nick"; print "DON'T fuck with the mighty one!!!1!!!" ;;
       *${IRC_NICK}*) dream& ;;
     esac
   done
