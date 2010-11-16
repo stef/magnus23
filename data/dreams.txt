@@ -2,6 +2,9 @@
 ACTION morgolodik
 ACTION mocorog
 ACTION almodik
+ACTION rolad almodik
+ACTION almaban beszel, de nem erted mit mond, csak a neved hallod
+ACTION mentalis csapjai rakulcsolodnak es szetroppantjak elmedet
 ACTION egyik csapja elindul feled
 ACTION nem szereti ha a kaja sokat dumal
 halando! miert ebresztgetsz?
