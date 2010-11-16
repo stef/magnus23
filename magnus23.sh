@@ -227,6 +227,8 @@ function handle_commands
       *hail\ ${IRC_NICK}*)
          print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
       *fuck\ you\ ${IRC_NICK}*) print "/kick $(msg_nick)"; print "DON'T fuck with the mighty one!!!1!!!" ;;
+      *imadom\ ${IRC_NICK}*) print "na meg egy hivo. mondjuk attol meg nem leszel finomabb...";;
+      *fail\ ${IRC_NICK}) print "$(msg_nick), te hitetlen. te leszel a reggelim";;
       *${IRC_NICK}*) dream& ;;
     esac
   done
