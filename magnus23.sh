@@ -11,6 +11,67 @@ function dream
    print "$d"
 }
 
+function award
+{
+   set -x
+   user="${1%%[ :]*}"
+   tmp="${1#*[ :]}"
+   awardid="${tmp%%[ :]*}"
+   award="${tmp#*[ :]}"
+   [[ -z "$awardid" ]] && {
+      print "F'thagn! !award user id [name]"
+      return
+   }
+   votes=$BASE_DIR/awards/$awardid
+   [[ -d $votes ]] ||
+      mkdir -p $votes
+   [[ -n "$award" ]] && [[ -f $votes/award.txt ]] ||
+         echo "$award" >"$votes/award.txt"
+   [[ -f "$votes/$user" ]] && 
+      (echo "$2"; cat <"$votes/$user" 2>/dev/null) | sort | uniq >"$votes/$user" || 
+      echo "$2" >"$votes/$user"
+   
+   print "$2 unlocks achievement: ($awardid) \"$award\" for $user"
+   set +x
+}
+
+function listawards
+{
+   awards=$BASE_DIR/awards
+   user="${1%%[ :]*}"
+   [[ -z "$user" ]] && {
+      print "F'thagn!!! !listawards user"
+      return
+   }
+   for awardid in $(echo $awards/*/); do
+      awardid=${awardid%/}
+      rank=$(wc -l "$awardid/$user" 2>/dev/null | cut -d' ' -f1)
+      [[ "$rank" -gt 1 ]] && {
+         award=$(cat $awardid/award.txt)
+         print "$user *$rank* (${awardid##*/}) $award"
+      } || print "locked: (${awardid##*/}) $award "
+   done
+}
+
+function listheroes
+{
+   awardid="${1%%[ :]*}"
+   [[ -z "$awardid" ]] && {
+      print "F'thagn!!! !listheros id"
+      return
+   }
+   votes=$BASE_DIR/awards/$awardid
+   for user in $(echo $votes/*); do
+      user=${user##*/}
+      [[ "$user" == 'award.txt' ]] && continue
+      rank=$(wc -l "$votes/$user" | cut -d' ' -f1)
+      [[ "$rank" -gt 1 ]] && {
+         award=$(cat $votes/award.txt)
+         print "$user *$rank* ($awardid) $award"
+      }
+   done
+}
+
 function tell
 {
    user="${1%%[ :]*}"
@@ -127,7 +188,7 @@ function translate_time
 
 function print_help
 {
-  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell'
+  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell, !award, !listawards, !listheroes'
 }
 
 function addquote
@@ -219,18 +280,26 @@ function handle_commands
           post_tweet "${message_text#\!twitter }" "$(msg_nick)" ;;
        !tell\ *)
           tell "${message_text#\!tell }" "$(msg_nick)" ;;
+       !award\ *)
+          award "${message_text#\!award }" "$(msg_nick)" ;;
+       !listawards\ *)
+          listawards "${message_text#\!listawards }" "$(msg_nick)" ;;
+       !listheroes\ *)
+          listheroes "${message_text#\!listheroes }" "$(msg_nick)" ;;
     esac 
 
-    case "$message_text" in
-      arise\ ${IRC_NICK}*)
-         print "I will devour your disgusting soul, mortal!";;
-      *hail\ ${IRC_NICK}*)
-         print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
-      *fuck\ you\ ${IRC_NICK}*) print "/kick $(msg_nick)"; print "DON'T fuck with the mighty one!!!1!!!" ;;
-      *imadom\ ${IRC_NICK}*) print "na meg egy hivo. mondjuk attol meg nem leszel finomabb...";;
-      *fail\ ${IRC_NICK}) print "$(msg_nick), te hitetlen. te leszel a reggelim";;
-      *${IRC_NICK}*) dream& ;;
-    esac
+    [[ $(msg_nick) == "$IRC_NICK" ]] ||
+       case "$message_text" in
+         arise\ ${IRC_NICK}*)
+            print "I will devour your disgusting soul, mortal!";;
+         *hail\ ${IRC_NICK}*)
+            print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
+         *fuck\ you\ ${IRC_NICK}*) print "/kick $(msg_nick)"; print "DON'T fuck with the mighty one!!!1!!!" ;;
+         *imadom\ ${IRC_NICK}*) print "na meg egy hivo. mondjuk attol meg nem leszel finomabb...";;
+         *${IRC_NICK}\ \<3*) print "tentacleporn!";;
+         *fail\ ${IRC_NICK}) print "$(msg_nick), te hitetlen. te leszel a reggelim";;
+         *${IRC_NICK}*) dream& ;;
+       esac
   done
 }
 
