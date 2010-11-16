@@ -3,7 +3,6 @@
 source ./configuration.sh
 
 mkdir -p "$EVENTS"
-# sanitize msg  ${asdf//[^a-zA-Z0-9 ]/}
 
 function dream
 {
@@ -184,8 +183,17 @@ function handle_commands
 {
   (tail --pid=$$ -fn0 "$IRC_CONNECTIONS/$IRC_HOST/$IRC_CHAN/out" |sed -u 's/[`$]//g') |  while read MSG
   do
-    message_text="$(msg_text)"
 
+    case "${MSG##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-2][0-9]:[0-5][0-9] -[\!]- }" in
+       *changed\ mode\/$IRC_CHAN*\+o*${IRC_NICK})
+          print "i will spare your pathetic soul, for now."; continue;;
+       jimm-erlang-bot\(\~jimm-erla@vsza.hu\)\ has\ joined\ $IRC_CHAN)
+          print "ohai my dear food^Wfriend"; print "/mode $IRC_CHAN +o jimm-erlang-bot"; continue;;
+       stf\(\~stf@92.43.201.132\)\ has\ joined\ $IRC_CHAN)
+          print "come slave"; print "/mode $IRC_CHAN +o stf";continue;;
+    esac
+
+    message_text="$(msg_text)"
     [[ -f "$BASE_DIR/tell/$(msg_nick)" ]] && dotell "$(msg_nick)"
 
     case "$message_text" in
@@ -214,9 +222,11 @@ function handle_commands
     esac 
 
     case "$message_text" in
-      arise\ ${IRC_NICK}*) print "I will devour your disgusting soul, mortal!";;
-      *hail\ ${IRC_NICK}*) print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
-      *fuck\ you\ ${IRC_NICK}*) print "/kick $msg_nick"; print "DON'T fuck with the mighty one!!!1!!!" ;;
+      arise\ ${IRC_NICK}*)
+         print "I will devour your disgusting soul, mortal!";;
+      *hail\ ${IRC_NICK}*)
+         print "Yes! Hail me! while you still can, until my tentacles will tear your soul apart!";;
+      *fuck\ you\ ${IRC_NICK}*) print "/kick $(msg_nick)"; print "DON'T fuck with the mighty one!!!1!!!" ;;
       *${IRC_NICK}*) dream& ;;
     esac
   done
@@ -338,9 +348,14 @@ function timesplit
 }
 
 handle_commands &
+cmddesc=$!
 handle_tweets &
+twtdesc=$!
 handle_events &
+evdesc=$!
 handle_messages &
+msgdesc=$!
+
+trap "kill $cmddesc $twtdesc $evdesc $msgdesc; exit" 2
 
 wait
-
