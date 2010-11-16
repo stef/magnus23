@@ -1,9 +1,9 @@
-ACTION alszik
-ACTION morgolodik
-ACTION mocorog
-ACTION almodik
-ACTION egyik csapja elindul feled
-ACTION nem szereti ha a kaja sokat dumal
+ACTION alszik
+ACTION morgolodik
+ACTION mocorog
+ACTION almodik
+ACTION egyik csapja elindul feled
+ACTION nem szereti ha a kaja sokat dumal
 halando! miert ebresztgetsz?
 azathoth falja fel zajongo lelked!
 biztos jo otlet engem ebresztgetni?
