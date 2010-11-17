@@ -14,13 +14,13 @@ function dream
 function award
 {
    user="${1%%[ :]*}"
-   tmp="${1#*[ :]}"
-   awardid="${tmp%%[ :]*}"
-   award="${tmp#*[ :]}"
-   [[ -z "$awardid" ]] && {
-      print "F'thagn! !award user id [name]"
+   [[ "$user" == "help" ]] && {
+      print "help: !award user id [name]"
       return
    }
+   tmp="${1#*[ :]}"
+   awardid="${tmp%% *}"
+   award="${tmp#* }"
    votes=$BASE_DIR/awards/$awardid
    [[ -d $votes ]] ||
       mkdir -p $votes
@@ -37,8 +37,8 @@ function listawards
 {
    awards=$BASE_DIR/awards
    user="${1%%[ :]*}"
-   [[ -z "$user" ]] && {
-      print "F'thagn!!! !listawards user"
+   [[ "$user" == "help" ]] && {
+      print "help: !listawards user"
       return
    }
    result=""
@@ -57,8 +57,8 @@ function listawards
 function listheroes
 {
    awardid="${1%%[ :]*}"
-   [[ -z "$awardid" ]] && {
-      print "F'thagn!!! !listheros id"
+   [[ "$awardid" == "help" ]] && {
+      print "help: !listheros id"
       return
    }
    votes=$BASE_DIR/awards/$awardid
@@ -113,7 +113,7 @@ function post_event
 
   ./grindr/feedr <"$CALENDAR_LOGIN"
   (./hspbp-tiki-add-event "$text" "$2" | ./grindr/feedr) &&
-     print "ACK" || print "F'taghn! \"yyyy-mm-dd hh:mm+h <title>|<blabla>"
+     print "ACK" || print "F'taghn! yyyy-mm-dd hh:mm+h <title>|<blabla>"
 }
 
 function post_tweet
