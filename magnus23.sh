@@ -13,7 +13,6 @@ function dream
 
 function award
 {
-   set -x
    user="${1%%[ :]*}"
    tmp="${1#*[ :]}"
    awardid="${tmp%%[ :]*}"
@@ -32,7 +31,6 @@ function award
       echo "$2" >"$votes/$user"
    
    print "$2 unlocks achievement: ($awardid) \"$award\" for $user"
-   set +x
 }
 
 function listawards
@@ -43,14 +41,17 @@ function listawards
       print "F'thagn!!! !listawards user"
       return
    }
+   result=""
    for awardid in $(echo $awards/*/); do
       awardid=${awardid%/}
+      award=$(cat $awardid/award.txt)
       rank=$(wc -l "$awardid/$user" 2>/dev/null | cut -d' ' -f1)
       [[ "$rank" -gt 1 ]] && {
-         award=$(cat $awardid/award.txt)
-         print "$user *$rank* (${awardid##*/}) $award"
-      } || print "locked: (${awardid##*/}) $award "
+         result="$result, ${awardid##*/}[$rank]"
+      } 
    done
+   [[ -n "$result" ]] &&
+      print "$user ${result##, }"
 }
 
 function listheroes
@@ -61,15 +62,19 @@ function listheroes
       return
    }
    votes=$BASE_DIR/awards/$awardid
+   award=$(cat $votes/award.txt)
+   result=""
    for user in $(echo $votes/*); do
       user=${user##*/}
       [[ "$user" == 'award.txt' ]] && continue
       rank=$(wc -l "$votes/$user" | cut -d' ' -f1)
       [[ "$rank" -gt 1 ]] && {
-         award=$(cat $votes/award.txt)
-         print "$user *$rank* ($awardid) $award"
+         result="$result, $user[$rank]"
       }
    done
+   [[ -z "$result" ]] &&
+      print "locked: (${awardid}) $award " || 
+      print "(${awardid}) $award ${result##, }"
 }
 
 function tell
