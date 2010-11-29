@@ -18,10 +18,10 @@ function award
       print "help: !award user id [name]"
       return
    }
-   user=${user//[^a-zA-Z0-9_-|]/}
+   user=${user//[^-a-zA-Z0-9_|]/}
    tmp="${1#*[ :]}"
    awardid="${tmp%% *}"
-   awardid=${awardid//[^a-zA-Z0-9_-<]/}
+   awardid=${awardid//[^-a-zA-Z0-9_<]/}
    award="${tmp#* }"
    votes="$BASE_DIR/awards/$awardid"
    [[ -d $votes ]] ||
@@ -41,7 +41,7 @@ function listawards
 {
    awards=$BASE_DIR/awards
    user="${1%%[ :]*}"
-   user="${user//[^a-zA-Z0-9_-|]/}"
+   user="${user//[^-a-zA-Z0-9_|]/}"
    [[ "$user" == "help" ]] && {
       print "help: !listawards user"
       return
@@ -62,7 +62,7 @@ function listawards
 function listheroes
 {
    awardid="${1%%[ :]*}"
-   awardid=${awardid//[^a-zA-Z0-9_-<]/}
+   awardid=${awardid//[^-a-zA-Z0-9_<]/}
    [[ "$awardid" == "help" ]] && {
       print "help: !listheros id"
       return
