@@ -14,10 +14,6 @@ function dream
 function award
 {
    user="${1%%[ :]*}"
-   [[ "$user" == "help" ]] && {
-      print "help: !award user id [name]"
-      return
-   }
    user=${user//[^-a-zA-Z0-9_|]/}
    tmp="${1#*[ :]}"
    awardid="${tmp%% *}"
@@ -37,30 +33,43 @@ function award
    print "$2 unlocks achievement: ($awardid) \"$award\" for $user"
 }
 
-function listawards
+function userawards
 {
    awards=$BASE_DIR/awards
    user="${1%%[ :]*}"
    user="${user//[^-a-zA-Z0-9_|]/}"
-   [[ "$user" == "help" ]] && {
-      print "help: !listawards user"
-      return
-   }
    result=""
+   nominee=""
    for awardid in $(echo $awards/*/); do
       awardid="${awardid%/}"
       award=$(cat "$awardid/award.txt")
       rank=$(wc -l "$awardid/$user" 2>/dev/null | cut -d' ' -f1)
-      [[ "$rank" -gt 1 ]] && {
+      [[ "$rank" -gt 1 ]] && 
          result="$result, ${awardid##*/}[$rank]"
-      } 
+      [[ "$rank" -eq 1 ]] && 
+         nominee="$nominee, ${awardid##*/}"
    done
    [[ -z "$result" ]] &&
-      print "$user is a noob" ||
+      print "$user is a noob" || 
       print "$user ${result##, }"
+   
+   [[ -n "$nominee" ]] && 
+      print "$user nominated for ${nominee##, }"
 }
 
-function listheroes
+function listawards
+{
+   awards=$BASE_DIR/awards
+   for awardid in $(echo $awards/*/); do
+      awardid="${awardid%/}"
+      result="$result, ${awardid##*/}"
+   done
+   [[ -z "$result" ]] &&
+      print "no awards yet" || 
+      print "${result##, }"
+}
+
+function listaward
 {
    awardid="${1%%[ :]*}"
    awardid=${awardid//[^-a-zA-Z0-9_<]/}
@@ -75,17 +84,21 @@ function listheroes
    }
    award=$(cat $votes/award.txt)
    result=""
+   nominee=""
    for user in $(echo $votes/*); do
       user=${user##*/}
       [[ "$user" == 'award.txt' ]] && continue
       rank=$(wc -l "$votes/$user" | cut -d' ' -f1)
-      [[ "$rank" -gt 1 ]] && {
+      [[ "$rank" -gt 1 ]] && 
          result="$result, $user[$rank]"
-      }
+      [[ "$rank" -eq 1 ]] && 
+         nominee="$nominee, $user"
    done
    [[ -z "$result" ]] &&
       print "locked: (${awardid}) $award " || 
       print "(${awardid}) $award ${result##, }"
+   [[ -n "$nominee" ]] && 
+      print "Nominated: ${nominee##, }"
 }
 
 function tell
@@ -204,7 +217,7 @@ function translate_time
 
 function print_help
 {
-  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell, !award, !listawards, !listheroes'
+  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell, !award, !userawards, !listaward, !listawards'
 }
 
 function addquote
@@ -296,12 +309,20 @@ function handle_commands
           post_tweet "${message_text#\!twitter }" "$(msg_nick)" ;;
        !tell\ *)
           tell "${message_text#\!tell }" "$(msg_nick)" ;;
+       !award)
+          print "help: !award user id [description]";;
        !award\ *)
           award "${message_text#\!award }" "$(msg_nick)" ;;
-       !listawards\ *)
-          listawards "${message_text#\!listawards }" "$(msg_nick)" ;;
-       !listheroes\ *)
-          listheroes "${message_text#\!listheroes }" "$(msg_nick)" ;;
+       !userawards)
+          print "help: !userawards user";;
+       !userawards\ *)
+          userawards "${message_text#\!userawards }" "$(msg_nick)" ;;
+       !listawards)
+          listawards ;;
+       !listaward)
+          print "help: !listaward awardid";;
+       !listaward\ *)
+          listaward "${message_text#\!listaward }" "$(msg_nick)" ;;
     esac 
 
     [[ $(msg_nick) == "$IRC_NICK" ]] ||
