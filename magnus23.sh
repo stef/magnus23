@@ -55,7 +55,8 @@ function listawards
          result="$result, ${awardid##*/}[$rank]"
       } 
    done
-   [[ -n "$result" ]] &&
+   [[ -z "$result" ]] &&
+      print "$user is a noob" ||
       print "$user ${result##, }"
 }
 
@@ -93,7 +94,7 @@ function tell
    msg="${1#*[ :]}"
    echo "$user: $2 says \"$msg\""
    echo "$user: $2 says \"$msg\"" >>"$BASE_DIR/tell/$user" &&
-      print "ACK" || print "NACK"
+      print "ACK $2! Saving \"$msg\" for $user" || print "NACK"
 }
 
 function dotell
