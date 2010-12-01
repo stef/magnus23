@@ -51,10 +51,10 @@ function userawards
    done
    [[ -z "$result" ]] &&
       print "$user is a noob" || 
-      print "$user ${result##, }"
+      print "$user ${result##, }"
    
    [[ -n "$nominee" ]] && 
-      print "$user nominated for ${nominee##, }"
+      print "$user nominated for ${nominee##, }"
 }
 
 function listawards
@@ -74,7 +74,7 @@ function listaward
    awardid="${1%%[ :]*}"
    awardid=${awardid//[^-a-zA-Z0-9_<]/}
    [[ "$awardid" == "help" ]] && {
-      print "help: !listheros id"
+      print "help: !listaward id"
       return
    }
    votes="$BASE_DIR/awards/$awardid"
@@ -90,9 +90,9 @@ function listaward
       [[ "$user" == 'award.txt' ]] && continue
       rank=$(wc -l "$votes/$user" | cut -d' ' -f1)
       [[ "$rank" -gt 1 ]] && 
-         result="$result, $user[$rank]"
+         result="$result, $user[$rank]"
       [[ "$rank" -eq 1 ]] && 
-         nominee="$nominee, $user"
+         nominee="$nominee, $user"
    done
    [[ -z "$result" ]] &&
       print "locked: (${awardid}) $award " || 
@@ -158,7 +158,7 @@ function get_tweets
 {
   while ! curl --silent --connect-timeout 15 \
     'http://search.twitter.com/search.atom?q=hspbp&show_user=true&rpp=50' | \
-    perl -0ne 'use HTML::Entities; print $1.";".decode_entities($2)."\n"
+    perl -C7 -0ne 'use HTML::Entities; print $1.";".decode_entities($2)."\n"
                while /<entry>.*?<id>.*?(\d*?)<\/id>.*?<title>(.*?)<\/title>/sg' | \
     iconv -f latin1 -t utf-8 | sort -n | tail -n 20
   do
