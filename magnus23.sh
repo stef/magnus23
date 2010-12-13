@@ -4,6 +4,24 @@ source ./configuration.sh
 
 mkdir -p "$EVENTS"
 
+function nao
+{
+   [[ -z "$1" ]] && {
+      print "$(ddate '+Today is %{%A, the %e of %B%}, %Y.%N Celebrate %H') $(perl -e 'printf "@%.2f",(((time()+3600)%86400)/86.4)')"
+      return
+   }  
+   tmp=$(date -d "$1" "+%d %m %Y" 2>/dev/null) 
+   [[ -z "$tmp" ]] && {
+      print "frmbl-grmbl"
+      return
+   }  
+   d=${tmp%% *}; tmp=${tmp#* }
+   m=${tmp%% *}; tmp=${tmp#* }
+   y=${tmp%% *}; tmp=${tmp#* }
+   s=$(date -d "$1" "+%s")
+   print "$(ddate '+%{%A, the %e of %B%}, %Y.%N (*%H*)' $d $m $y ) $(perl -e 'printf "@%.2f",((('$s'+3600)%86400)/86.4)')"
+}
+
 function dream
 {
    sleep $(( RANDOM % 120 ))
@@ -217,7 +235,7 @@ function translate_time
 
 function print_help
 {
-  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell, !award, !userawards, !listaward, !listawards'
+  print 'My available commands are: !tweet, !addquote, !lastquote, !randomquote, !addevent, !listevents, !delevent, !postevent, !tell, !award, !userawards, !listaward, !listawards, !nao'
 }
 
 function addquote
@@ -323,6 +341,10 @@ function handle_commands
           print "help: !listaward awardid";;
        !listaward\ *)
           listaward "${message_text#\!listaward }" "$(msg_nick)" ;;
+       !nao)
+          nao;;
+       !nao\ *)
+          nao "${message_text#\!nao }" ;;
     esac 
 
     [[ $(msg_nick) == "$IRC_NICK" ]] ||
@@ -455,6 +477,29 @@ function timesplit
   [ $seconds -gt 0 ] && echo "$seconds seconds"
 }
 
+function handle_cron
+{
+  monitored="$IRC_CONNECTIONS/$IRC_HOST/$IRC_CHAN/out"
+  crond="$BASE_DIR/cron"
+  [[ -f "$crond/ddate" ]] || touch -d yesterday "$crond/ddate"
+  while true; do
+     silence=$(( $(date '+%s') - $(stat -c '%Z' "$monitored" ) ))
+     # wake up and play with flook
+     [[ $silence -gt $(( 6 * 3600 )) ]] && {
+        print "ACTION ???"
+        print ".ch eves, alvas"
+     }
+     dd=$(stat -c '%Y' "$crond/ddate" )
+     midnight=$(date -d 00:00 '+%s')
+     [[ "$dd" -lt "$midnight" ]] && {
+        print "$(ddate '+Today is %{%A, the %e of %B%}, %Y. %NCelebrate %H') - All hail Eris!!1!"
+        touch "$crond/ddate"
+     }
+     sleep 512
+  done
+}
+
+
 handle_commands &
 cmddesc=$!
 handle_tweets &
@@ -463,7 +508,9 @@ handle_events &
 evdesc=$!
 handle_messages &
 msgdesc=$!
+handle_cron &
+crondesc=$!
 
-trap "kill $cmddesc $twtdesc $evdesc $msgdesc; exit" 2
+trap "kill $cmddesc $twtdesc $evdesc $msgdesc $crondesc; exit" 2
 
 wait
