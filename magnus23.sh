@@ -77,6 +77,7 @@ function userawards
 
 function listawards
 {
+   result=""
    awards=$BASE_DIR/awards
    for awardid in $(echo $awards/*/); do
       awardid="${awardid%/}"
@@ -174,7 +175,7 @@ function post_tweet
 
 function get_tweets
 {
-  while ! curl --silent --connect-timeout 15 \
+  while ! curl -f --silent --connect-timeout 15 \
     'http://search.twitter.com/search.atom?q=hspbp&show_user=true&rpp=50' | \
     perl -C7 -0ne 'use HTML::Entities; print $1.";".decode_entities($2)."\n"
                while /<entry>.*?<id>.*?(\d*?)<\/id>.*?<title>(.*?)<\/title>/sg' | \
@@ -345,6 +346,8 @@ function handle_commands
           nao;;
        !nao\ *)
           nao "${message_text#\!nao }" ;;
+       !karacsony)
+          print "hmmm, renszarvas steak igazi inyenc falat!";;
     esac 
 
     [[ $(msg_nick) == "$IRC_NICK" ]] ||
@@ -379,7 +382,7 @@ function handle_events
           break
         }
         lastinterval=1000000000
-        for interval in 86400 21600 3600 900 300 60 15 5 1
+        for interval in 2592000 604800 86400 21600 3600 900 300 60 15 5 1
         do
           if [ $remaining -lt $lastinterval ] &&
              [ $remaining -ge $interval ] &&
@@ -492,7 +495,9 @@ function handle_cron
      dd=$(stat -c '%Y' "$crond/ddate" )
      midnight=$(date -d 00:00 '+%s')
      [[ "$dd" -lt "$midnight" ]] && {
-        print "$(ddate '+Today is %{%A, the %e of %B%}, %Y. %NCelebrate %H') - All hail Eris!!1!"
+        print "$(ddate '+Today is %{%A, the %e of %B%}, %Y. %NCelebrate %H') - All hail Eris!!5!"
+        today=$BASE_DIR/holidays/$(date "+%d-%m") 
+        [[ -f "$today" ]] && print "$(cat $today 2>/dev/null)"
         touch "$crond/ddate"
      }
      sleep 512
