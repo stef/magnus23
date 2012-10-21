@@ -123,6 +123,7 @@ function listaward
 function tell
 {
    user="${1%%[ :]*}"
+   user=${user//[^-a-zA-Z0-9_<]/}
    msg="${1#*[ :]}"
    echo "$user: $2 says \"$msg\""
    echo "$user: $2 says \"$msg\"" >>"$BASE_DIR/tell/$user" &&
